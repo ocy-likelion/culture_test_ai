@@ -3,6 +3,13 @@ from typing import Union
 from fastapi import FastAPI
 from pydantic import BaseModel
 
+from typing import List
+
+from cluster import cluster_users
+
+
+
+
 app = FastAPI()
 
 class Item(BaseModel):
@@ -35,3 +42,15 @@ def add(a: int, b: int):
 def add():
     return {"helloooooo"}
     
+
+class ClusterRequest(BaseModel):
+    users: List[List[float]]
+    n_clusters: int = 4
+
+@app.post("/cluster")
+def cluster(req: ClusterRequest):
+    try:
+        result = cluster_users(req.users, req.n_clusters)
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
