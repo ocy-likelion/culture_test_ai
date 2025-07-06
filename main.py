@@ -13,7 +13,7 @@ class Item(BaseModel):
 
 @app.get("/")
 def read_root():
-    return {"Hello": "World"}
+    return {"안녕하십니까, 기업 컬쳐핏 ai 성향 테스트 c팀의 AI쪽을 담당하는 서버입니다"}
 
 
 @app.get("/items/{item_id}")
