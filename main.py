@@ -54,3 +54,16 @@ def cluster(req: ClusterRequest):
         return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+    
+class VectorRequest(BaseModel):
+    userId: int
+    surveyId: int
+    vector: List[float]
+
+@app.post("/receive/vector/test")
+async def receive_vector(data: VectorRequest):
+    print(f"Received vector: {data.vector}")
+    # 군집화에 활용
+    return {"status": "ok"}
