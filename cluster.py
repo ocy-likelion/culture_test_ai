@@ -15,14 +15,4 @@ def cluster_users(users: list[list[float]], n_clusters: int = 4):
     }
 
 
-    
-class VectorRequest(BaseModel):
-    userId: int
-    surveyId: int
-    vector: List[float]
-
-@app.post("/receive/vector/test")
-async def receive_vector(data: VectorRequest):
-    print(f"Received vector: {data.vector}")
-    # 군집화에 활용
-    return {"status": "ok"}
+ 
