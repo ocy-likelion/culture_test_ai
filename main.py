@@ -74,7 +74,7 @@ async def receive_vector(data: VectorRequest):
         print(f"[LOG] 벡터가 10개 이상 누적되어 군집화 실행! (현재 {count}개)")
         vectors = get_all_vectors()
         try:
-            result = cluster_users(vectors, n_clusters=2)
+            result = cluster_users(vectors, n_clusters=4)
             print(f"[LOG] 군집화 결과: {result}")
             clear_vectors()
             return {"status": "clustered", "result": result}
