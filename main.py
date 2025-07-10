@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 from typing import List
 
-from cluster import cluster_users
+from cluster import cluster_users, add_user_vector, get_all_vectors, clear_vectors
 
 
 
@@ -57,13 +57,28 @@ def cluster(req: ClusterRequest):
 
 
     
+
 class VectorRequest(BaseModel):
     userId: int
     surveyId: int
     vector: List[float]
 
+
+# 벡터 누적 및 군집화 테스트용 엔드포인트
 @app.post("/receive/vector/test")
 async def receive_vector(data: VectorRequest):
-    print(f"받아온 유저 Id: {data.userId}, 받아온 설문 Id: {data.surveyId} 해당 vector 값: {data.vector}")
-    # 군집화에 활용
-    return {"status": "ok"}
+    count = add_user_vector(data.userId, data.surveyId, data.vector)
+    print(f"[LOG] 현재 누적 벡터 개수: {count}")
+    # 예시: 5개 이상 쌓이면 군집화 실행
+    if count >= 10:
+        print(f"[LOG] 벡터가 10개 이상 누적되어 군집화 실행! (현재 {count}개)")
+        vectors = get_all_vectors()
+        try:
+            result = cluster_users(vectors, n_clusters=2)
+            print(f"[LOG] 군집화 결과: {result}")
+            clear_vectors()
+            return {"status": "clustered", "result": result}
+        except Exception as e:
+            print(f"[ERROR] 군집화 중 오류 발생: {e}")
+            return {"status": "error", "detail": str(e)}
+    return {"status": "ok", "current_count": count}
