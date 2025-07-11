@@ -1,6 +1,7 @@
 from typing import Union
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from typing import List
@@ -11,6 +12,20 @@ from cluster import cluster_users, add_user_vector, get_all_vectors, clear_vecto
 
 
 app = FastAPI()
+
+origins = [
+    "http://localhost:8090",
+    "https://api.heun0.site",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 class Item(BaseModel):
     name: str
