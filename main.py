@@ -91,7 +91,7 @@ def receive_vector_batch(vectors: List[List[float]]):
     for v in vectors:
         print(v)
     # 받은 벡터들로 바로 군집화 실행
-    print(f"이 {len(vectors)} 개의 값들로 군집화를 진행중입니다 기다려주세요...")
+    print(f"이 {len(vectors)} 개의 값들로 군집화를 진행중입니다. 조금만 기다려주세요...")
     try:
         result = cluster_users(vectors, n_clusters=4)
         print(f"[LOG] 군집화 결과: {result}")
