@@ -72,6 +72,7 @@ async def receive_vector(data: VectorRequest):
     # 예시: 5개 이상 쌓이면 군집화 실행
     if count >= 10:
         print(f"[LOG] 벡터가 10개 이상 누적되어 군집화 실행! (현재 {count}개)")
+        print(f"군집화 중, 잠시만 기다려주세요...")
         vectors = get_all_vectors()
         try:
             result = cluster_users(vectors, n_clusters=4)
