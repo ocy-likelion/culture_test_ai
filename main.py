@@ -83,3 +83,11 @@ async def receive_vector(data: VectorRequest):
             print(f"[ERROR] 군집화 중 오류 발생: {e}")
             return {"status": "error", "detail": str(e)}
     return {"status": "ok", "current_count": count}
+
+
+@app.post("/receive/vector/batch")
+def receive_vector_batch(vectors: List[List[float]]):
+    print(f"한꺼번에 {len(vectors)} 개의 벡터 값을 받았습니다")
+    for v in vectors:
+        print(v)
+    return {"status": "ok", "count": len(vectors)}
