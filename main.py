@@ -90,4 +90,12 @@ def receive_vector_batch(vectors: List[List[float]]):
     print(f"한꺼번에 {len(vectors)} 개의 벡터 값을 받았습니다")
     for v in vectors:
         print(v)
-    return {"status": "ok", "count": len(vectors)}
+    # 받은 벡터들로 바로 군집화 실행
+    print(f"이 {len(vectors)} 개의 값들로 군집화를 진행중입니다 기다려주세요...")
+    try:
+        result = cluster_users(vectors, n_clusters=4)
+        print(f"[LOG] 군집화 결과: {result}")
+        return {"status": "clustered", "result": result}
+    except Exception as e:
+        print(f"[ERROR] 군집화 중 오류 발생: {e}")
+        return {"status": "error", "detail": str(e)}
