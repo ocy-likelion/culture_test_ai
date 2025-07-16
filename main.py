@@ -85,16 +85,20 @@ async def receive_vector(data: VectorRequest):
     return {"status": "ok", "current_count": count}
 
 
+class VectorBatchRequest(BaseModel):
+    clusterNum: int
+    vectors: List[List[float]]
+
 @app.post("/receive/vector/batch")
-def receive_vector_batch(vectors: List[List[float]]):
-    print(f"한꺼번에 {len(vectors)} 개의 벡터 값을 받았습니다")
-    for v in vectors:
+def receive_vector_batch(VectorBatchRequest: VectorBatchRequest):
+    print(f"한꺼번에 {len(VectorBatchRequest.vectors)} 개의 벡터 값을 받았습니다")
+    for v in VectorBatchRequest.vectors:
         print(v)
     # 받은 벡터들로 바로 군집화 실행
-    print(f"이 {len(vectors)} 개의 값들로 군집화를 진행중입니다. 조금만 기다려주세요...")
+    print(f"이 값들로 {VectorBatchRequest.clusterNum}개의 군집 만들기를 시도 중입니다. 조금만 기다려주세요...")
     try:
-        result = cluster_users(vectors, n_clusters=4)
-        print(f"[LOG] 군집화 결과: {result}")
+        result = cluster_users(VectorBatchRequest.vectors, n_clusters=VectorBatchRequest.clusterNum)
+        print(f" {VectorBatchRequest.clusterNum}개의 군집을 만든 결과: {result}")
         return {"status": "clustered", "result": result}
     except Exception as e:
         print(f"[ERROR] 군집화 중 오류 발생: {e}")

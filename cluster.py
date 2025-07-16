@@ -42,7 +42,7 @@ def describe_centroid(centroid):
             desc.append(f"{property_pairs[i]['neg']['name']} 성향이 강함 (값: {v:.2f})")
     return '\n'.join(desc)
 
-def cluster_users(users: list[list[float]], n_clusters: int = 4):
+def cluster_users(users: list[list[float]], n_clusters: int = 16):
     kmeans = KMeans(n_clusters=n_clusters)
     labels = kmeans.fit_predict(users)
     centers = kmeans.cluster_centers_
