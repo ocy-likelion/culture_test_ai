@@ -32,17 +32,17 @@ property_pairs = [
 ]
 
 def describe_centroid(centroid):
-    # 각 차원의 절대값과 인덱스 추출
+    # 각 차원의 절대값과 인덱스 추출 후 내림차순 정렬
     abs_with_idx = sorted([(abs(v), i, v) for i, v in enumerate(centroid)], reverse=True)
     desc = []
-    for _, i, v in abs_with_idx[:2]:
+    for _, i, v in abs_with_idx:
         if v > 0:
             desc.append(f"{property_pairs[i]['pos']['name']} 성향이 강함 (값: {v:.2f})")
         else:
             desc.append(f"{property_pairs[i]['neg']['name']} 성향이 강함 (값: {v:.2f})")
     return '\n'.join(desc)
 
-def cluster_users(users: list[list[float]], n_clusters: int = 4):
+def cluster_users(users: list[list[float]], n_clusters: int = 16):
     kmeans = KMeans(n_clusters=n_clusters)
     labels = kmeans.fit_predict(users)
     centers = kmeans.cluster_centers_

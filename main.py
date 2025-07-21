@@ -8,7 +8,7 @@ from typing import List
 
 from cluster import cluster_users, add_user_vector, get_all_vectors, clear_vectors
 
-
+from client import send_result_to_server
 
 
 app = FastAPI()
@@ -87,6 +87,7 @@ async def receive_vector(data: VectorRequest):
     # 예시: 5개 이상 쌓이면 군집화 실행
     if count >= 10:
         print(f"[LOG] 벡터가 10개 이상 누적되어 군집화 실행! (현재 {count}개)")
+        print(f"군집화 중, 잠시만 기다려주세요...")
         vectors = get_all_vectors()
         try:
             result = cluster_users(vectors, n_clusters=4)
@@ -97,3 +98,30 @@ async def receive_vector(data: VectorRequest):
             print(f"[ERROR] 군집화 중 오류 발생: {e}")
             return {"status": "error", "detail": str(e)}
     return {"status": "ok", "current_count": count}
+
+
+class VectorBatchRequest(BaseModel):
+    clusterNum: int
+    vectors: List[List[float]]
+
+@app.post("/receive/vector/batch")
+def receive_vector_batch(VectorBatchRequest: VectorBatchRequest):
+    print(f"한꺼번에 {len(VectorBatchRequest.vectors)} 개의 벡터 값을 받았습니다")
+    for v in VectorBatchRequest.vectors:
+        print(v)
+    # 받은 벡터들로 바로 군집화 실행
+    print(f"이 값들로 {VectorBatchRequest.clusterNum}개의 군집 만들기를 시도 중입니다. 조금만 기다려주세요...")
+    print("try 블록 진입 직전")
+    try:
+        result = cluster_users(VectorBatchRequest.vectors, n_clusters=VectorBatchRequest.clusterNum)
+        print(f" {VectorBatchRequest.clusterNum}개의 군집을 만든 결과: {result}")
+        print("send_result_to_server 호출 직전")
+        send_result_to_server(
+            {"status": "clustered", "result": result},
+            "http://localhost:8090/api/v1/cluster/result"
+        )
+        print("send_result_to_server 호출 직후")
+        return {"status": "clustered", "result": result}
+    except Exception as e:
+        print(f"[ERROR] 군집화 중 오류 발생: {e}")
+        return {"status": "error", "detail": str(e)}
