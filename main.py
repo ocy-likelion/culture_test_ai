@@ -9,7 +9,10 @@ from cluster import cluster_users, add_user_vector, get_all_vectors, clear_vecto
 
 from client import send_result_to_server
 
+import os
 
+BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8090")
+ENDPOINT = "/api/v1/cluster/result"
 app = FastAPI()
 
 class Item(BaseModel):
@@ -103,7 +106,7 @@ def receive_vector_batch(VectorBatchRequest: VectorBatchRequest):
         print("send_result_to_server 호출 직전")
         send_result_to_server(
             {"status": "clustered", "result": result},
-            "http://localhost:8090/api/v1/cluster/result"
+            BACKEND_URL + ENDPOINT
         )
         print("send_result_to_server 호출 직후")
         return {"status": "clustered", "result": result}
