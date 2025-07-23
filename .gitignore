@@ -6,7 +6,6 @@ venv/
 *.pyd
 *.db
 *.sqlite
-.env
 *.env
 .env.*
 *.csv
