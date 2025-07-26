@@ -118,7 +118,7 @@ def receive_vector_batch(VectorBatchRequest: VectorBatchRequest):
         print("send_result_to_server 호출 직전")
         send_result_to_server(
             {"status": "clustered", "result": result},
-            "http://localhost:8090/api/v1/cluster/result"
+            BACKEND_URL + ENDPOINT
         )
         print("send_result_to_server 호출 직후")
 
