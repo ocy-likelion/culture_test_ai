@@ -11,6 +11,9 @@ from cluster import cluster_users, add_user_vector, get_all_vectors, clear_vecto
 from client import send_result_to_server
 
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8090")
 ENDPOINT = "/api/v1/cluster/result"
@@ -107,8 +110,17 @@ class VectorBatchRequest(BaseModel):
     clusterNum: int
     vectors: List[List[float]]
 
+cluster_status = {
+    "last_request_count": 0,
+    "last_status": "아직 군집화 요청 없음"
+}
+
 @app.post("/receive/vector/batch")
 def receive_vector_batch(VectorBatchRequest: VectorBatchRequest):
+
+    cluster_status["last_request_count"] += 1
+    cluster_status["last_status"] = f"{cluster_status['last_request_count']}번째 군집화 요청을 받았습니다. 군집화 처리 중..."
+    
     print(f"한꺼번에 {len(VectorBatchRequest.vectors)} 개의 벡터 값을 받았습니다")
     for v in VectorBatchRequest.vectors:
         print(v)
@@ -124,7 +136,19 @@ def receive_vector_batch(VectorBatchRequest: VectorBatchRequest):
             BACKEND_URL + ENDPOINT
         )
         print("send_result_to_server 호출 직후")
-        return {"status": "clustered", "result": result}
+
+        cluster_status["last_status"] = f"{cluster_status['last_request_count']}번째 군집화 완료"
+
+        return {"status": "clustered"}
+        # , "result": result
     except Exception as e:
         print(f"[ERROR] 군집화 중 오류 발생: {e}")
+
+        cluster_status["last_status"] = f"{cluster_status['last_request_count']}번째 군집화 실패: {e}"
+
         return {"status": "error", "detail": str(e)}
+
+
+@app.get("/cluster/status")
+def get_cluster_status():
+    return {"status": cluster_status["last_status"]}
